@@ -1,0 +1,13 @@
+#cloud-config
+users:
+    - name: ansible
+      ssh_import_id:
+        - gh:klapkop
+      sudo: ['ALL=(ALL) NOPASSWD:ALL']
+      groups: sudo
+      shell: /bin/bash
+
+runcmd:
+    - apt update && apt upgrade -y
+    - date > /etc/PROVISION_DATE
+    - reboot
