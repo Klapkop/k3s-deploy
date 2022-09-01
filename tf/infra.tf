@@ -59,6 +59,7 @@ resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
         to_port = 2380
     }
 
+    # ssh
     rule {
         from_port = 22
         to_port = 22
@@ -66,6 +67,7 @@ resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
         cidr = "0.0.0.0/0"
     }
 
+    # Kube api
     rule {
         from_port = 6443
         to_port = 6443
