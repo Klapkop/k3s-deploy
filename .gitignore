@@ -1,3 +1,6 @@
+# Deploy secrets
+*/deploy
+
 # Openstack creds
 **/*/clouds.yaml
 
