@@ -35,12 +35,39 @@ resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
     description = "K3s secgroup"
 
     rule {
+        self = true
+        ip_protocol = "tcp"
+        from_port = 1
+        to_port = 65000
+    }
+
+    rule {
+        self = true
+        ip_protocol = "udp"
+        from_port = 1
+        to_port = 65000
+    }
+
+    rule {
         from_port = 22
         to_port = 22
         ip_protocol = "tcp"
         cidr = "0.0.0.0/0"
     }
-  
+
+    rule {
+        from_port = 6443
+        to_port = 6443
+        ip_protocol = "tcp"
+        cidr = "0.0.0.0/0"
+    }
+
+    rule {
+        from_port   = -1
+        to_port     = -1
+        ip_protocol = "icmp"
+        cidr        = "0.0.0.0/0"
+    }
 }
 
 #### Instances ####
