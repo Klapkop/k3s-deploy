@@ -34,18 +34,29 @@ resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
     name = format("TF_%s_k3s", var.k3s_cluster_name)
     description = "K3s secgroup"
 
-    rule {
-        self = true
-        ip_protocol = "tcp"
-        from_port = 1
-        to_port = 65000
-    }
-
+    # Flannel
     rule {
         self = true
         ip_protocol = "udp"
-        from_port = 1
-        to_port = 65000
+        from_port = 8472
+        to_port = 8472
+    }
+
+
+    # Metrics
+    rule {
+        self = true
+        ip_protocol = "tcp"
+        from_port = 10250
+        to_port = 10250
+    }
+
+    # Etcd
+    rule {
+        self = true
+        ip_protocol = "tcp"
+        from_port = 2379
+        to_port = 2380
     }
 
     rule {
