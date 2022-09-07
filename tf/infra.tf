@@ -92,14 +92,12 @@ resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
 
 resource "openstack_compute_keypair_v2" "k3s_key" {
     name = format("%s", var.k3s_cluster_name)
-    description = "Managed By Terraform"
     public_key = var.public_key
 }
 
 resource "openstack_compute_instance_v2" "k3s_server_nodes" {
     count = var.k3s_server_nodes
     name = format("%s_server-%s", var.k3s_cluster_name, count.index)
-    description = "Managed By Terraform"
     image_name = var.os_image_name
     flavor_name = var.k3s_server_flavor
     key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
@@ -114,7 +112,6 @@ resource "openstack_compute_instance_v2" "k3s_server_nodes" {
 resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
     count = var.k3s_worker_nodes
     name = format("%s_worker-%s", var.k3s_cluster_name, count.index)
-    description = "Managed By Terraform"
     flavor_name = var.k3s_worker_flavor
     image_name = var.os_image_name
     key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
