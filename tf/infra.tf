@@ -107,6 +107,12 @@ resource "openstack_compute_instance_v2" "k3s_server_nodes" {
     network {
       name = "${openstack_networking_network_v2.k3s_network.name}"
     }
+
+    metadata = {
+        cluster = var.k3s_cluster_name
+        role = "k3s-server"
+        nodes = var.k3s_server_nodes
+    }
 }
 
 resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
@@ -120,6 +126,12 @@ resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
 
     network {
       name = "${openstack_networking_network_v2.k3s_network.name}"
+    }
+
+    metadata = {
+        cluster = var.k3s_cluster_name
+        role = "k3s-worker"
+        nodes = var.k3s_worker_nodes
     }
 }
 
