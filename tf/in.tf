@@ -60,6 +60,6 @@ variable "k3s_server_flavor" {
 variable "k3s_worker_flavor" {
     type = string
     description = "Openstack instance flavor"
-    default = "k3s.small"
+    default = "k3s.medium"
   
 }

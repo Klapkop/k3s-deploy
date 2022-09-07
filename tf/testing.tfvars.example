@@ -11,5 +11,5 @@ k3s_server_nodes = 3
 k3s_worker_nodes = 3
 k3s_server_usrdata" = "./cloud-init/user-data.yaml"
 k3s_worker_usrdata" = "./cloud-init/user-data.yaml"
-k3s_server_flavor = "k3s.small"
-k3s_worker_flavor = "k3s.medium"
+k3s_server_flavor = "k3s.medium"
+k3s_worker_flavor = "k3s.large"
