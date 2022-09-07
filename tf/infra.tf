@@ -35,7 +35,7 @@ resource "openstack_networking_router_interface_v2" "k3s_router_if" {
 # }
 
 resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
-    name = format("%s_k3s", var.k3s_cluster_name)
+    name = format("%s_server_group", var.k3s_cluster_name)
     description = "Managed By Terraform"
 
     # Flannel
@@ -87,35 +87,53 @@ resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
     }
 }
 
+
 #### Instances ####
 
 resource "openstack_compute_keypair_v2" "k3s_key" {
-    name = format("TF_k3s_%s", var.k3s_cluster_name)
+    name = format("%s", var.k3s_cluster_name)
     description = "Managed By Terraform"
     public_key = var.public_key
 }
 
-
-resource "openstack_compute_instance_v2" "k3s_nodes" {
-    count = var.k3s_nodes
-    name = format("TF_k3s_%s_%s", var.k3s_cluster_name, count.index)
+resource "openstack_compute_instance_v2" "k3s_server_nodes" {
+    count = var.k3s_server_nodes
+    name = format("%s_server-%s", var.k3s_cluster_name, count.index)
     description = "Managed By Terraform"
     key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
     security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
-    flavor_name = var.os_flavor
+    flavor_name = var.k3s_server_flavor
     image_name = var.os_image_name
-    user_data = file(var.user_data_path)
+    user_data = file(var.k3s_server_usrdata)
 
     network {
       name = "${openstack_networking_network_v2.k3s_network.name}"
     }
 }
 
+
 # resource "openstack_compute_floatingip_associate_v2" "k3s_fips" {
-#     count = var.k3s_nodes
-#     floating_ip = "${openstack_networking_floatingip_v2.k3s_ext_ips[count.index].address}"
-#     instance_id = "${openstack_compute_instance_v2.k3s_nodes[count.index].id}"
+#      count = var.k3s_server_nodes
+#      floating_ip = "${openstack_networking_floatingip_v2.k3s_ext_ips[count.index].address}"
+#      instance_id = "${openstack_compute_instance_v2.k3s_server_nodes[count.index].id}"
 # }
+
+
+resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
+    count = var.k3s_worker_nodes
+    name = format("%s_worker-%s", var.k3s_cluster_name, count.index)
+    description = "Managed By Terraform"
+    key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
+    security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
+    flavor_name = var.k3s_worker_flavor
+    image_name = var.os_image_name
+    user_data = file(var.k3s_worker_usrdata)
+
+    network {
+      name = "${openstack_networking_network_v2.k3s_network.name}"
+    }
+}
+
     
     
 
