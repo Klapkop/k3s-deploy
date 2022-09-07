@@ -111,14 +111,6 @@ resource "openstack_compute_instance_v2" "k3s_server_nodes" {
     }
 }
 
-
-# resource "openstack_compute_floatingip_associate_v2" "k3s_fips" {
-#      count = var.k3s_server_nodes
-#      floating_ip = "${openstack_networking_floatingip_v2.k3s_ext_ips[count.index].address}"
-#      instance_id = "${openstack_compute_instance_v2.k3s_server_nodes[count.index].id}"
-# }
-
-
 resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
     count = var.k3s_worker_nodes
     name = format("%s_worker-%s", var.k3s_cluster_name, count.index)
@@ -134,6 +126,11 @@ resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
     }
 }
 
+# resource "openstack_compute_floatingip_associate_v2" "k3s_fips" {
+#      count = var.k3s_server_nodes
+#      floating_ip = "${openstack_networking_floatingip_v2.k3s_ext_ips[count.index].address}"
+#      instance_id = "${openstack_compute_instance_v2.k3s_server_nodes[count.index].id}"
+# }
     
     
 
