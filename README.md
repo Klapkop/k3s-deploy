@@ -1,1 +1,1 @@
-# k3s_simple
+# k3s
