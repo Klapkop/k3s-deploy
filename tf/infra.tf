@@ -35,7 +35,7 @@ resource "openstack_networking_router_interface_v2" "k3s_router_if" {
 # }
 
 resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
-    name = format("%s_server_group", var.k3s_cluster_name)
+    name = format("%s_default", var.k3s_cluster_name)
     description = "Managed By Terraform"
 
     # Flannel
