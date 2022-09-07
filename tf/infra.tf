@@ -28,11 +28,11 @@ resource "openstack_networking_router_interface_v2" "k3s_router_if" {
     subnet_id = "${openstack_networking_subnet_v2.k3s_subnet.id}"
 }
 
-resource "openstack_networking_floatingip_v2" "k3s_ext_ips" {
-    description = "Managed By Terraform"
-    count = var.k3s_nodes
-    pool = var.os_floating_pool
-}
+# resource "openstack_networking_floatingip_v2" "k3s_ext_ips" {
+#     description = "Managed By Terraform"
+#     count = var.k3s_nodes
+#     pool = var.os_floating_pool
+# }
 
 resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
     name = format("%s_k3s", var.k3s_cluster_name)
@@ -111,11 +111,11 @@ resource "openstack_compute_instance_v2" "k3s_nodes" {
     }
 }
 
-resource "openstack_compute_floatingip_associate_v2" "k3s_fips" {
-    count = var.k3s_nodes
-    floating_ip = "${openstack_networking_floatingip_v2.k3s_ext_ips[count.index].address}"
-    instance_id = "${openstack_compute_instance_v2.k3s_nodes[count.index].id}"
-}
+# resource "openstack_compute_floatingip_associate_v2" "k3s_fips" {
+#     count = var.k3s_nodes
+#     floating_ip = "${openstack_networking_floatingip_v2.k3s_ext_ips[count.index].address}"
+#     instance_id = "${openstack_compute_instance_v2.k3s_nodes[count.index].id}"
+# }
     
     
 
