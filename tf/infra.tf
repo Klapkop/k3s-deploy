@@ -2,13 +2,13 @@
 ##### Networking ####
 
 resource "openstack_networking_network_v2" "k3s_network" {
-    name = format("%s_k3s", var.k3s_cluster_name)
+    name = format("%s_k3s_net", var.k3s_cluster_name)
     description = "Managed By Terraform"
     admin_state_up = true
 }
 
 resource "openstack_networking_subnet_v2" "k3s_subnet" {
-    name = format("%s_k3s", var.k3s_cluster_name)
+    name = format("%s_k3s_sub", var.k3s_cluster_name)
     description = "Managed By Terraform"
     network_id = "${openstack_networking_network_v2.k3s_network.id}"
     ip_version = 4
@@ -16,7 +16,7 @@ resource "openstack_networking_subnet_v2" "k3s_subnet" {
 }
 
 resource "openstack_networking_router_v2" "k3s_router" {
-    name = format("%s_k3s", var.k3s_cluster_name)
+    name = format("%s_k3s_gw", var.k3s_cluster_name)
     description = "Managed By Terraform"
     admin_state_up = true
     external_network_id = var.os_extnet_id
@@ -100,10 +100,10 @@ resource "openstack_compute_instance_v2" "k3s_server_nodes" {
     count = var.k3s_server_nodes
     name = format("%s_server-%s", var.k3s_cluster_name, count.index)
     description = "Managed By Terraform"
+    image_name = var.os_image_name
+    flavor_name = var.k3s_server_flavor
     key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
     security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
-    flavor_name = var.k3s_server_flavor
-    image_name = var.os_image_name
     user_data = file(var.k3s_server_usrdata)
 
     network {
@@ -115,10 +115,10 @@ resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
     count = var.k3s_worker_nodes
     name = format("%s_worker-%s", var.k3s_cluster_name, count.index)
     description = "Managed By Terraform"
-    key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
-    security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
     flavor_name = var.k3s_worker_flavor
     image_name = var.os_image_name
+    key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
+    security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
     user_data = file(var.k3s_worker_usrdata)
 
     network {
