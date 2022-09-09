@@ -15,16 +15,16 @@ resource "openstack_networking_subnet_v2" "k3s_subnet" {
     cidr = "172.16.1.0/24"
 }
 
-resource "openstack_networking_router_v2" "k3s_router" {
-    name = format("%s_k3s_gw", var.k3s_cluster_name)
-    description = "Managed By Terraform"
-    admin_state_up = true
-    external_network_id = var.os_extnet_id
+# resource "openstack_networking_router_v2" "k3s_router" {
+#     name = format("%s_k3s_gw", var.k3s_cluster_name)
+#     description = "Managed By Terraform"
+#     admin_state_up = true
+#     external_network_id = var.os_extnet_id
   
-}
+# }
 
 resource "openstack_networking_router_interface_v2" "k3s_router_if" {
-    router_id = "${openstack_networking_router_v2.k3s_router.id}"
+    router_id = "d8ad2181-9af1-4341-92e1-576308b9090d"
     subnet_id = "${openstack_networking_subnet_v2.k3s_subnet.id}"
 }
 
@@ -93,6 +93,26 @@ resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
 resource "openstack_compute_keypair_v2" "k3s_key" {
     name = format("%s", var.k3s_cluster_name)
     public_key = var.public_key
+}
+
+
+
+# Deploy node
+resource "openstack_compute_instance_v2" "k3s_deploy_node" {
+    name = format("%s_deploy", var.k3s_cluster_name)
+    image_name = var.os_image_name
+    flavor_name = "k3s.small"
+    key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
+    security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
+    user_data = file(var.k3s_server_usrdata)
+
+    network {
+      name = "${openstack_networking_network_v2.k3s_network.name}"
+    }
+
+    metadata = {
+        cluster = var.k3s_cluster_name
+    }
 }
 
 resource "openstack_compute_instance_v2" "k3s_server_nodes" {
