@@ -8,6 +8,4 @@ users:
       shell: /bin/bash
 
 runcmd:
-    - apt update && apt upgrade -y
     - date > /etc/PROVISION_DATE
-    - reboot
