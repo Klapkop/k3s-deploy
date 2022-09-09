@@ -24,7 +24,7 @@ resource "openstack_networking_subnet_v2" "k3s_subnet" {
 # }
 
 resource "openstack_networking_router_interface_v2" "k3s_router_if" {
-    router_id = "d8ad2181-9af1-4341-92e1-576308b9090d"
+    router_id = var.os_router_id
     subnet_id = "${openstack_networking_subnet_v2.k3s_subnet.id}"
 }
 
@@ -96,25 +96,6 @@ resource "openstack_compute_keypair_v2" "k3s_key" {
 }
 
 
-
-# Deploy node
-resource "openstack_compute_instance_v2" "k3s_deploy_node" {
-    name = format("%s_deploy", var.k3s_cluster_name)
-    image_name = var.os_image_name
-    flavor_name = "k3s.small"
-    key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
-    security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
-    user_data = file(var.k3s_server_usrdata)
-
-    network {
-      name = "${openstack_networking_network_v2.k3s_network.name}"
-    }
-
-    metadata = {
-        cluster = var.k3s_cluster_name
-    }
-}
-
 resource "openstack_compute_instance_v2" "k3s_server_nodes" {
     count = var.k3s_server_nodes
     name = format("%s_server-%s", var.k3s_cluster_name, count.index)
@@ -133,6 +114,10 @@ resource "openstack_compute_instance_v2" "k3s_server_nodes" {
         role = "k3s-server"
         nodes = var.k3s_server_nodes
     }
+
+    depends_on = [
+        openstack_networking_router_interface_v2.k3s_router_if
+    ]
 }
 
 resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
@@ -153,6 +138,10 @@ resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
         role = "k3s-worker"
         nodes = var.k3s_worker_nodes
     }
+
+    depends_on = [
+        openstack_networking_router_interface_v2.k3s_router_if
+    ]
 }
 
 # resource "openstack_compute_floatingip_associate_v2" "k3s_fips" {
