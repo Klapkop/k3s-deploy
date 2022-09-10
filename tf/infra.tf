@@ -115,6 +115,7 @@ resource "openstack_networking_port_v2" "k3s_inst_ports" {
     count = var.k3s_server_nodes
     name = format("k3s_port_%s", count.index)
     network_id = "${openstack_networking_network_v2.k3s_network.id}"
+    security_group_ids = ["${openstack_compute_secgroup_v2.k3s_secgroup.id}"]
 
     fixed_ip {
         subnet_id = "${openstack_networking_subnet_v2.k3s_subnet.id}"
@@ -133,7 +134,7 @@ resource "openstack_compute_instance_v2" "k3s_server_nodes" {
     image_name = var.os_image_name
     flavor_name = var.k3s_server_flavor
     key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
-    security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
+    #security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
     user_data = file(var.k3s_server_usrdata)
 
     network {
