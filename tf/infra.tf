@@ -34,32 +34,32 @@ resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
 
     # Flannel
     rule {
-        self = true
+        self        = true
         ip_protocol = "udp"
-        from_port = 8472
-        to_port = 8472
+        from_port   = 8472
+        to_port     = 8472
     }
 
 
     # Metrics
     rule {
-        self = true
+        self        = true
         ip_protocol = "tcp"
-        from_port = 10250
-        to_port = 10250
+        from_port   = 10250
+        to_port     = 10250
     }
 
     # Etcd
     rule {
-        self = true
+        self        = true
         ip_protocol = "tcp"
-        from_port = 2379
-        to_port = 2380
+        from_port   = 2379
+        to_port     = 2380
     }
 
     # ssh
     rule {
-        self= true
+        from_group_id = "${openstack_compute_secgroup_v2.k3s_deploy_secgroup.id}"
         from_port = 22
         to_port = 22
         ip_protocol = "tcp"
@@ -80,6 +80,28 @@ resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
         cidr        = "0.0.0.0/0"
     }
 }
+
+
+resource "openstack_compute_secgroup_v2" "k3s_deploy_secgroup" {
+    name = format("%s_deploy", var.k3s_cluster_name)
+    description = "Managed By Terraform"
+
+    # ssh
+    rule {
+        from_port   = 22
+        to_port     = 22
+        ip_protocol = "tcp"
+        cidr        = "0.0.0.0/0"
+    }
+
+    rule {
+        from_port   = -1
+        to_port     = -1
+        ip_protocol = "icmp"
+        cidr        = "0.0.0.0/0"
+    }
+}
+
 
 ## HA setup
 resource "openstack_networking_floatingip_v2" "k3s_floating_vip" {
