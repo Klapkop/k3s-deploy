@@ -28,6 +28,17 @@ variable "k3s_cluster_name" {
   
 }
 
+variable "k3s_cidr" {
+    type = string
+    default = "172.16.1.0/24"
+}
+
+variable "k3s_vip" {
+    type = string
+    default = "172.16.1.100"
+  
+}
+
 variable "k3s_server_nodes" {
     type = number
     default = 3

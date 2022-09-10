@@ -12,7 +12,7 @@ resource "openstack_networking_subnet_v2" "k3s_subnet" {
     description = "Managed By Terraform"
     network_id = "${openstack_networking_network_v2.k3s_network.id}"
     ip_version = 4
-    cidr = "172.16.1.0/24"
+    cidr = var.k3s_cidr
 }
 
 # resource "openstack_networking_router_v2" "k3s_router" {
@@ -27,12 +27,6 @@ resource "openstack_networking_router_interface_v2" "k3s_router_if" {
     router_id = var.os_router_id
     subnet_id = "${openstack_networking_subnet_v2.k3s_subnet.id}"
 }
-
-# resource "openstack_networking_floatingip_v2" "k3s_ext_ips" {
-#     description = "Managed By Terraform"
-#     count = var.k3s_nodes
-#     pool = var.os_floating_pool
-# }
 
 resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
     name = format("%s_default", var.k3s_cluster_name)
@@ -87,12 +81,49 @@ resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
     }
 }
 
+## HA setup
+resource "openstack_networking_floatingip_v2" "k3s_floating_vip" {
+    description = format("%s k3s api vip", var.k3s_cluster_name)
+    pool = var.os_floating_pool
+}
+
+resource "openstack_networking_port_v2" "k3s_vip_port" {
+    name = format("%s_vip_port", var.k3s_cluster_name)
+    network_id = "${openstack_networking_network_v2.k3s_network.id}"
+    admin_state_up = "true"
+    no_security_groups = "true"
+
+    fixed_ip {
+        subnet_id = "${openstack_networking_subnet_v2.k3s_subnet.id}"
+        ip_address = var.k3s_vip
+    }
+}
+
+resource "openstack_networking_floatingip_associate_v2" "k3s_floating_vip" {
+    floating_ip = "${openstack_networking_floatingip_v2.k3s_floating_vip.address}"
+    port_id = "${openstack_networking_port_v2.k3s_vip_port.id}"
+}
 
 #### Instances ####
-
 resource "openstack_compute_keypair_v2" "k3s_key" {
     name = format("%s", var.k3s_cluster_name)
     public_key = var.public_key
+}
+
+# net ports
+resource "openstack_networking_port_v2" "k3s_inst_ports" {
+    count = var.k3s_server_nodes
+    name = format("k3s_port_%s", count.index)
+    network_id = "${openstack_networking_network_v2.k3s_network.id}"
+
+    fixed_ip {
+        subnet_id = "${openstack_networking_subnet_v2.k3s_subnet.id}"
+        ip_address = format("172.16.1.1%s", count.index)
+    }
+
+    allowed_address_pairs {
+        ip_address = var.k3s_vip
+    }
 }
 
 
@@ -106,7 +137,7 @@ resource "openstack_compute_instance_v2" "k3s_server_nodes" {
     user_data = file(var.k3s_server_usrdata)
 
     network {
-      name = "${openstack_networking_network_v2.k3s_network.name}"
+      port = "${openstack_networking_port_v2.k3s_inst_ports[count.index].id}"
     }
 
     metadata = {
@@ -131,6 +162,7 @@ resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
 
     network {
       name = "${openstack_networking_network_v2.k3s_network.name}"
+      fixed_ip_v4 = format("172.16.1.2%s", count.index)
     }
 
     metadata = {
@@ -143,6 +175,12 @@ resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
         openstack_networking_router_interface_v2.k3s_router_if
     ]
 }
+
+
+
+
+
+
 
 # resource "openstack_compute_floatingip_associate_v2" "k3s_fips" {
 #      count = var.k3s_server_nodes
