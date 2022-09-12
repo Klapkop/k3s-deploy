@@ -160,7 +160,6 @@ resource "openstack_compute_instance_v2" "k3s_server_nodes" {
     image_id = data.openstack_images_image_v2.ubuntu.id
     flavor_name = var.k3s_server_flavor
     key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
-    #security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
     user_data = file(var.k3s_server_usrdata)
 
     network {
@@ -184,7 +183,6 @@ resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
     flavor_name = var.k3s_worker_flavor
     image_id = data.openstack_images_image_v2.ubuntu.id
     key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
-    security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
     user_data = file(var.k3s_worker_usrdata)
 
     network {
