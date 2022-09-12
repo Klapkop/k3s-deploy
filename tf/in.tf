@@ -9,9 +9,9 @@ variable "os_image_name" {
     default = "Ubuntu 20.04"
 }
 
-variable "os_router_id" {
+variable "os_router" {
     type = string
-    description = "Openstack router"
+    description = "Openstack router name"
 }
 
 variable "os_floating_pool" {

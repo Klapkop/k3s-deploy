@@ -15,7 +15,7 @@ resource "openstack_networking_subnet_v2" "k3s_subnet" {
 }
 
 resource "openstack_networking_router_interface_v2" "k3s_router_if" {
-    router_id = var.os_router_id
+    router_id = data.openstack_networking_router_v2.gw_router.id
     subnet_id = "${openstack_networking_subnet_v2.k3s_subnet.id}"
 }
 
@@ -157,7 +157,7 @@ resource "openstack_compute_keypair_v2" "k3s_key" {
 resource "openstack_compute_instance_v2" "k3s_server_nodes" {
     count = var.k3s_server_nodes
     name = format("%s_server-%s", var.k3s_cluster_name, count.index)
-    image_name = var.os_image_name
+    image_id = data.openstack_images_image_v2.ubuntu.id
     flavor_name = var.k3s_server_flavor
     key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
     #security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
@@ -182,7 +182,7 @@ resource "openstack_compute_instance_v2" "k3s_worker_nodes" {
     count = var.k3s_worker_nodes
     name = format("%s_worker-%s", var.k3s_cluster_name, count.index)
     flavor_name = var.k3s_worker_flavor
-    image_name = var.os_image_name
+    image_id = data.openstack_images_image_v2.ubuntu.id
     key_pair = "${openstack_compute_keypair_v2.k3s_key.name}"
     security_groups = ["${openstack_compute_secgroup_v2.k3s_secgroup.name}"]
     user_data = file(var.k3s_worker_usrdata)

@@ -1,7 +1,7 @@
 
 # Openstack
 os_cloud = "openstack"
-os_router_id = "3685307e-a854-442c-b4a9-5668bbe05392"
+os_router = "router_name"
 os_floating_pool = "public1"
 public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCt1IjBRLdcGM31T6fG8Qj6L4CxceNdoSfQhdDUB/rblZKoJuS2tyv+F54OPxZotWgwldEvuRNtzfSmWxC8eTb3sy7F/A9cKgEDauR4I6f3MMOHcXue+oxxfv7R7IEI9pf/756P48zTcsY2+7p7bcLbGzQ7i1o8qsUUccMwSL/8qG5tCHCbm6ilBJ6Lu9m5JOsY9j0J4SOjv8/mwO7/g6XRoUwSsIBkDy+PHiI+HKzHJdaD8l1GDfyb0bwYhy4g/QN4YqJ2O0m8aw+jky98NxL4faQDJJRO3MzIIBJkR2oCg2nwB07JscRwqZXrRrFKg6kg4xhSJYo99agbW1acenTH77d/b79tAtVFiRtnrNmK6ezmKJOhXWzZ8bzr0OSxsLV6/Ma2aXvy/vS4qulnRy6z0d4rbgWApsFaLcTahxdSNyDaRnEXhWq9Sg3jE6T9FjT2fApMJoxMa4PV7J3XgMBlXVf2Tzfdpm6yTYmfTrDn7lrebafq2QvgSdfbSySj/H0= jeroen@Jeroen-Workstation"
 
