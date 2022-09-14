@@ -14,9 +14,9 @@ variable "os_router" {
     description = "Openstack router name"
 }
 
-variable "os_floating_pool" {
+variable "os_ext_net" {
     type = string
-    description = "Openstack Floating ip pool"
+    description = "External network name"
 }
 
 variable "public_key" {
