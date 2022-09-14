@@ -133,7 +133,7 @@ resource "openstack_networking_port_v2" "k3s_server_ports" {
 }
 
 resource "openstack_networking_port_v2" "k3s_worker_ports" {
-    count = var.k3s_server_nodes
+    count = var.k3s_worker_nodes
     name = format("k3s_workerport_%s", count.index)
     network_id = "${openstack_networking_network_v2.k3s_network.id}"
     security_group_ids = ["${openstack_compute_secgroup_v2.k3s_secgroup.id}"]
