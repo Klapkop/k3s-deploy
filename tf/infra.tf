@@ -95,7 +95,7 @@ resource "openstack_compute_secgroup_v2" "k3s_deploy_secgroup" {
 ## HA setup
 resource "openstack_networking_floatingip_v2" "k3s_floating_vip" {
     description = format("%s k3s api vip", var.k3s_cluster_name)
-    pool = var.ext_net
+    pool = var.os_ext_net
 }
 
 resource "openstack_networking_port_v2" "k3s_vip_port" {
