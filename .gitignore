@@ -1,3 +1,7 @@
+**/secret*.yml
+**/secret*.yaml
+**/secret/*
+
 # Deploy secrets
 **/deploy
 
