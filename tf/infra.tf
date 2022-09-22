@@ -64,6 +64,21 @@ resource "openstack_compute_secgroup_v2" "k3s_secgroup" {
         cidr = "0.0.0.0/0"
     }
 
+    # Traefik ingress
+    rule {
+        from_port = 80
+        to_port = 80
+        ip_protocol = "tcp"
+        cidr = "0.0.0.0/0"
+    }
+
+    rule {
+        from_port = 443
+        to_port = 443
+        ip_protocol = "tcp"
+        cidr = "0.0.0.0/0"
+    }
+
     rule {
         from_port   = -1
         to_port     = -1
@@ -114,6 +129,30 @@ resource "openstack_networking_floatingip_associate_v2" "k3s_floating_vip" {
     floating_ip = "${openstack_networking_floatingip_v2.k3s_floating_vip.address}"
     port_id = "${openstack_networking_port_v2.k3s_vip_port.id}"
 }
+
+## LB port
+resource "openstack_networking_floatingip_v2" "k3s_floating_lb" {
+    description = format("%s k3s lb vip1", var.k3s_cluster_name)
+    pool = var.os_ext_net
+}
+
+resource "openstack_networking_port_v2" "k3s_lb_port" {
+    name = format("%s_lb_port1", var.k3s_cluster_name)
+    network_id = "${openstack_networking_network_v2.k3s_network.id}"
+    admin_state_up = "true"
+    no_security_groups = "true"
+
+    fixed_ip {
+        subnet_id = "${openstack_networking_subnet_v2.k3s_subnet.id}"
+        ip_address = "172.16.1.80"
+    }
+}
+
+resource "openstack_networking_floatingip_associate_v2" "k3s_floating_lb" {
+    floating_ip = "${openstack_networking_floatingip_v2.k3s_floating_lb.address}"
+    port_id = "${openstack_networking_port_v2.k3s_lb_port.id}"
+}
+
 
 
 # Network ports
