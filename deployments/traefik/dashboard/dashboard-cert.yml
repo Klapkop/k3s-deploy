@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: traefik-service-luchtenberg-eu
+  namespace: traefik
+spec:
+  secretName: traefik-service-sprint-luchtenberg-eu-production-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "traefik.service.sprint.luchtenberg.eu"
+  dnsNames:
+    - "traefik.service.sprint.luchtenberg.eu"
+    

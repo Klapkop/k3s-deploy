@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: local-luchtenberg-eu
+  namespace: default
+spec:
+  secretName: local-luchtenberg-eu-staging-tls
+  issuerRef:
+    name: letsencrypt-staging
+    kind: ClusterIssuer
+  commonName: "service.sprint.luchtenberg.eu"
+  dnsNames:
+    - "service.sprint.luchtenberg.eu"

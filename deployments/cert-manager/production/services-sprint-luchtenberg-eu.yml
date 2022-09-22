@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: service-sprint-luchtenberg-eu
+  namespace: default
+spec:
+  secretName: service-sprint-luchtenberg-eu-production-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "service.sprint.luchtenberg.eu"
+  dnsNames:
+    - "service.sprint.luchtenberg.eu"

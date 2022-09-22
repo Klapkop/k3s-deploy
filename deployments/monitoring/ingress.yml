@@ -1,0 +1,32 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: grafana
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+    entryPoints:
+      - websecure
+    routes: 
+      - match: Host(`grafana.service.sprint.luchtenberg.eu`)
+        kind: Rule
+        services:
+          - name: grafana
+            port: 80
+    tls:
+      secretName: grafana-service-sprint-luchtenberg-eu-production-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana-service-luchtenberg-eu
+  namespace: monitoring
+spec:
+  secretName: grafana-service-sprint-luchtenberg-eu-production-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "grafana.service.sprint.luchtenberg.eu"
+  dnsNames:
+    - "grafana.service.sprint.luchtenberg.eu"
